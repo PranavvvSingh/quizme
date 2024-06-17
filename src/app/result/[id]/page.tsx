@@ -13,7 +13,6 @@ import Link from "next/link"
 async function fetchData(id: string) {
    const supabase = await createClient()
    const session = await getServerSession(options)
-   console.log(session?.user?.email)
    const quizResponse = await supabase
       .from("quiz")
       .select("score, responses, created_at")

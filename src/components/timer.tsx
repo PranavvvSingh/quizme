@@ -1,25 +1,22 @@
 "use client"
 
 import { formatTime } from "@/utils/utilities"
-import React, { SetStateAction, useEffect, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { RxLapTimer as TimerIcon } from "react-icons/rx"
 
 interface TimerProps {
-   // setIsTimeUp: React.Dispatch<SetStateAction<boolean>>
    numOfQuestions: number
-   // submitQuiz: () => Promise<void>
+   stopTimer: boolean
+   onTimeUp: () => void
 }
 const Timer = (props: TimerProps) => {
-   const [time, setTime] = useState(10 * props.numOfQuestions) // 30s for each
+   const [time, setTime] = useState(20 * props.numOfQuestions) // 30s for each
 
    useEffect(() => {
+      if (props.stopTimer) return
       const intervalId = setInterval(() => {
          if (time === 0) {
-            // props.submitQuiz()
-            const element = document.getElementById(
-               "timeout_modal",
-            ) as HTMLFormElement
-            if (element) element.showModal()
+            props.onTimeUp()
             return
          }
          setTime(time - 1)

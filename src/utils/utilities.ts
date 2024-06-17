@@ -15,13 +15,12 @@ export const stringToDateAndTime = (dateString: string) => {
    const hours = date.getHours()
    const minutes = date.getMinutes()
    const ampm = hours >= 12 ? "PM" : "AM"
-   const formattedDate = `${date.getDate()}-${date.toLocaleString("default", {
+   const formattedDate = `${date.getDate()} ${date.toLocaleString("default", {
       month: "short",
-   })}-${date.getFullYear()}`
+   })} ${date.getFullYear()}`
    const formattedTime = `${hours % 12 || 12}:${
       minutes < 10 ? "0" : ""
    }${minutes} ${ampm}`
 
    return `${formattedTime}, ${formattedDate}`
 }
-

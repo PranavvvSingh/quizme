@@ -5,43 +5,48 @@ import Question from "@/components/question"
 import Timer from "@/components/timer"
 import axios from "axios"
 import { useParams } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { TbCheck as CorrectIcon } from "react-icons/tb"
 import { RxCross2 as WrongIcon } from "react-icons/rx"
 import { createClient } from "@/utils/client"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import CorrectAns from "../../../../../public/correct.svg"
 import IncorrectAns from "../../../../../public/incorrect.svg"
 import Image from "next/image"
-import Timeout from "@/components/timeout"
+import StartQuiz from "@/components/startQuiz"
+import QuizOver from "@/components/quizOver"
 
 const Quiz = () => {
    const params = useParams()
-   const router = useRouter()
-   const [numOfQuestions] = useState<number>(parseInt(params.num[0]))
-   const [topic] = useState(params.topic)
+
+   const topic = useRef(params.topic)
+   const numOfQuestions = useRef(parseInt(params.num[0]))
    const [quiz, setQuiz] = useState<OllamaResponseType>()
    const [currentQuestion, setCurrentQuestion] = useState(0)
    const [correct, setCorrect] = useState(0)
    const [incorrect, setIncorrect] = useState(0)
-   const [isTimeUp, setIsTimeUp] = useState(false)
    const [showToast, setShowToast] = useState<"success" | "error" | null>(null)
+   const [quizStatus, setQuizStatus] = useState<
+      "pending" | "started" | "timeup" | "ended" | "terminate" | null
+   >(null)
 
    const supabase = createClient()
    const quizId = useRef<number>()
    const answers = useRef<number[]>([])
    const { data: session } = useSession()
 
+   const enteredFullScreen = useRef(false)
+
    const fetchQuestions = async () => {
       const res = await axios.post("http://localhost:11434/api/generate", {
          model: "quizme",
-         prompt: `Topic: ${topic} Questions: ${numOfQuestions}`,
+         prompt: `Topic: ${topic.current} Questions: ${numOfQuestions.current}`,
          format: "json",
          stream: false,
       })
       const data: OllamaResponseType = JSON.parse(res.data.response)
       console.log(data)
+
       setQuiz(data)
       // save the data in database
       const insertDataIntoQuestion = data.questions.map((question) => {
@@ -69,7 +74,7 @@ const Quiz = () => {
          .insert({
             user: session?.user?.email ?? "test@gmail.com",
             responses: insertDataIntoQuiz,
-            topic: topic,
+            topic: topic.current,
             score: 0,
          })
          .select()
@@ -84,6 +89,8 @@ const Quiz = () => {
          question_id: data,
       }))
       await supabase.from("quiz_mapping").insert(insertDataIntoQuizMapping)
+
+      setQuizStatus("pending")
    }
 
    const saveAnswer = async (selectedOption: number) => {
@@ -96,8 +103,7 @@ const Quiz = () => {
             .from("quiz")
             .update({ responses: answers.current, score: correct + 1 })
             .eq("id", quizId.current)
-            .then(({ data, error }) => {
-               console.log(data)
+            .then(({ error }) => {
                if (error) console.log(error)
             })
          setCorrect((prev) => prev + 1)
@@ -107,8 +113,7 @@ const Quiz = () => {
             .from("quiz")
             .update({ responses: answers.current })
             .eq("id", quizId.current)
-            .then(({ data, error }) => {
-               console.log(data)
+            .then(({ error }) => {
                if (error) console.log(error)
             })
          setIncorrect((prev) => prev + 1)
@@ -116,7 +121,7 @@ const Quiz = () => {
       }
 
       if (currentQuestion + 1 === quiz?.questions.length) {
-         console.log("submitting quiz")
+         setQuizStatus("ended")
          submitQuiz()
          return
       }
@@ -124,8 +129,14 @@ const Quiz = () => {
       setCurrentQuestion((prev) => prev + 1)
    }
 
-   const submitQuiz = async () => {
-      router.push(`/result/${quizId.current}`)
+   const submitQuiz = () => {
+      if (typeof document !== "undefined") {
+         if (document.fullscreenElement) {
+            document.exitFullscreen()
+            enteredFullScreen.current = false
+         }
+      }
+      // router.push(`/result/${quizId.current}`)
    }
 
    useEffect(() => {
@@ -139,63 +150,121 @@ const Quiz = () => {
       return () => clearTimeout(timeoutId)
    }, [showToast])
 
-   if (!quiz) return <Loader />
+   const onEnterFullScreen = useCallback(() => {
+      if (typeof document !== "undefined") {
+         const layout = document.getElementById("layout")
+         if (!document.fullscreenElement && layout) {
+            layout.requestFullscreen()
+            enteredFullScreen.current = true
+         }
+      }
+   }, [])
+
+   const onChangeFullScreen = useCallback(() => {
+      if (typeof document === "undefined") return
+      if (enteredFullScreen.current && !document.fullscreenElement) {
+         setQuizStatus("terminate")
+         submitQuiz()
+      }
+   }, [])
+
+   const onChangeVisibility = useCallback(() => {
+      if (typeof document === "undefined") return
+      if (document.visibilityState === "hidden") {
+         setQuizStatus("terminate")
+         submitQuiz()
+      }
+   }, [])
+
+   useEffect(() => {
+      if (quizStatus === "started") {
+         document.addEventListener("fullscreenchange", onChangeFullScreen)
+         document.addEventListener("visibilitychange", onChangeVisibility)
+      }
+
+      return () => {
+         document.removeEventListener("fullscreenchange", onChangeFullScreen)
+         document.removeEventListener("visibilitychange", onChangeVisibility)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [quizStatus])
+
+   if (!quizStatus || !quiz) return <Loader />
+   else if (quizStatus === "pending")
+      return (
+         <StartQuiz
+            onStartQuiz={() => {
+               setQuizStatus("started")
+               onEnterFullScreen()
+            }}
+         />
+      )
+   // make one component for all of these
+   else if (
+      (quizStatus === "ended" ||
+         quizStatus === "timeup" ||
+         quizStatus === "terminate") &&
+      quizId.current
+   ) {
+      return <QuizOver quizId={quizId.current} status={quizStatus} />
+   }
 
    return (
-      <>
-         <div className="h-full flex items-center justify-center relative">
-            <Timer numOfQuestions={numOfQuestions} />
-            <div className="w-[600px]">
-               <div className="flex justify-between items-center mb-5">
-                  <div>
-                     Topic: <button className="btn btn-sm">{topic}</button>
+      <div className="h-full flex items-center justify-center relative">
+         <Timer
+            numOfQuestions={numOfQuestions.current}
+            stopTimer={quizStatus === "terminate"}
+            onTimeUp={() => setQuizStatus("timeup")}
+         />
+         <div className="w-[600px]">
+            <div className="flex justify-between items-center mb-5">
+               <div>
+                  Topic: <button className="btn btn-sm">{topic.current}</button>
+               </div>
+               <div className="stats shadow ">
+                  <div className="stat bg-green-500/[0.9] font-bold text-white px-4 py-[5px] flex items-center">
+                     <CorrectIcon />
+                     {correct}
                   </div>
-                  <div className="stats shadow ">
-                     <div className="stat bg-green-500/[0.9] font-bold text-white px-4 py-[5px] flex items-center">
-                        <CorrectIcon />
-                        {correct}
-                     </div>
-                     <div className="stat bg-red-500/[0.9] font-bold text-white px-4 py-[5px] flex items-center">
-                        <WrongIcon />
-                        {incorrect}
-                     </div>
+                  <div className="stat bg-red-500/[0.9] font-bold text-white px-4 py-[5px] flex items-center">
+                     <WrongIcon />
+                     {incorrect}
                   </div>
                </div>
-               <Question
-                  questionType={quiz.questions[currentQuestion]}
-                  saveAnswer={saveAnswer}
-                  totalQuestions={quiz.questions.length}
-               />
             </div>
-            {showToast === "success" && (
-               <div className="toast toast-end">
-                  <div className="alert alert-success text-white">
-                     <Image
-                        src={CorrectAns}
-                        alt="Correct Anse"
-                        height={20}
-                        width={20}
-                     />
-                     <span>You got it right!</span>
-                  </div>
-               </div>
-            )}
-            {showToast === "error" && (
-               <div className="toast toast-end">
-                  <div className="alert alert-error text-white">
-                     <Image
-                        src={IncorrectAns}
-                        alt="Correct Anse"
-                        height={20}
-                        width={20}
-                     />
-                     <span>Wrong answer</span>
-                  </div>
-               </div>
-            )}
-            {quizId.current && <Timeout quizId={quizId.current} />}
+            <Question
+               questionType={quiz.questions[currentQuestion]}
+               saveAnswer={saveAnswer}
+               totalQuestions={quiz.questions.length}
+            />
          </div>
-      </>
+         {showToast === "success" && (
+            <div className="toast toast-end">
+               <div className="alert alert-success text-white">
+                  <Image
+                     src={CorrectAns}
+                     alt="Correct Answer"
+                     height={20}
+                     width={20}
+                  />
+                  <span>You got it right!</span>
+               </div>
+            </div>
+         )}
+         {showToast === "error" && (
+            <div className="toast toast-end">
+               <div className="alert alert-error text-white">
+                  <Image
+                     src={IncorrectAns}
+                     alt="Incorrect Answer"
+                     height={20}
+                     width={20}
+                  />
+                  <span>Wrong answer</span>
+               </div>
+            </div>
+         )}
+      </div>
    )
 }
 

@@ -1,14 +1,27 @@
 import Link from "next/link"
 import React from "react"
 
-interface TimeoutProps {
+interface QuizOverProps {
+   status: "terminate" | "timeup" | "ended"
    quizId: number
 }
-
-const Timeout = (props: TimeoutProps) => {
+const QuizOver = (props: QuizOverProps) => {
+   let heading
+   switch (props.status) {
+      case "timeup":
+         heading = "Time Over"
+         break
+      case "terminate":
+         heading = "Quiz Terminated!"
+         break
+      case "ended":
+         heading = "Quiz Completed"
+         break
+   }
+   
    return (
       <div className="h-full w-full flex flex-col items-center justify-center gap-7">
-         <h3 className="font-bold text-lg">Time Over</h3>
+         <h3 className="font-bold text-lg">{heading}</h3>
          <p className="py-4">
             Your quiz session has ended. Thank you for participating!
          </p>
@@ -24,4 +37,4 @@ const Timeout = (props: TimeoutProps) => {
    )
 }
 
-export default Timeout
+export default QuizOver

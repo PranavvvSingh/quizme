@@ -29,8 +29,8 @@ export default async function Home() {
             </div>
             <Image alt="Quiz icon" src={QuizIcon} width={40} />
          </Link>
-         <div className="flex flex-row gap-9 w-full">
-            <div className="w-[400px] grow-0 card-body px-7 py-5 border rounded-lg">
+         <div className="flex flex-row gap-9 w-full h-full">
+            <div className="w-[400px] grow-0 card-body px-7 py-5 border rounded-lg h-fit">
                <h2 className="card-title mb-4"># Recent Topics</h2>
                <table className="table">
                   <tbody>
@@ -43,7 +43,7 @@ export default async function Home() {
                   </tbody>
                </table>
             </div>
-            <div className="grow card-body px-7 py-5  border rounded-lg">
+            <div className="grow card-body px-7 py-5 border rounded-lg h-full">
                <h2 className="card-title mb-4 flex">
                   <Image alt="Quiz icon" src={HistoryIcon} width={27} />
                   Your past attempts

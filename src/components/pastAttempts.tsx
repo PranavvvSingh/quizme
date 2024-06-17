@@ -14,7 +14,7 @@ const PastAttempts = (props: PastAttemptsProps) => {
    }
 
    return (
-      <table className="table">
+      <table className="table h-full">
          <thead>
             <tr>
                <th></th>
@@ -23,7 +23,7 @@ const PastAttempts = (props: PastAttemptsProps) => {
                <th>Score</th>
             </tr>
          </thead>
-         <tbody>
+         <tbody className="">
             {props.data?.map((quiz, index) => (
                <tr
                   key={index}

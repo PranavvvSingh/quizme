@@ -21,8 +21,8 @@ const QuizOver = (props: QuizOverProps) => {
    
    return (
       <div className="h-full w-full flex flex-col items-center justify-center gap-7">
-         <h3 className="font-bold text-lg">{heading}</h3>
-         <p className="py-4">
+         <h3 className="font-bold text-xl">{heading}</h3>
+         <p className="py-4 text-lg">
             Your quiz session has ended. Thank you for participating!
          </p>
          <div className="flex gap-2">

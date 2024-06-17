@@ -21,6 +21,12 @@ const Quiz = () => {
 
    const topic = useRef(params.topic)
    const numOfQuestions = useRef(parseInt(params.num[0]))
+   const supabase = createClient()
+   const { data: session } = useSession()
+   const quizId = useRef<number>()
+   const answers = useRef<number[]>([])
+   const enteredFullScreen = useRef(false)
+
    const [quiz, setQuiz] = useState<OllamaResponseType>()
    const [currentQuestion, setCurrentQuestion] = useState(0)
    const [correct, setCorrect] = useState(0)
@@ -30,13 +36,6 @@ const Quiz = () => {
       "pending" | "started" | "timeup" | "ended" | "terminate" | null
    >(null)
 
-   const supabase = createClient()
-   const quizId = useRef<number>()
-   const answers = useRef<number[]>([])
-   const { data: session } = useSession()
-
-   const enteredFullScreen = useRef(false)
-
    const fetchQuestions = async () => {
       const res = await axios.post("http://localhost:11434/api/generate", {
          model: "quizme",
@@ -45,7 +44,6 @@ const Quiz = () => {
          stream: false,
       })
       const data: OllamaResponseType = JSON.parse(res.data.response)
-      console.log(data)
 
       setQuiz(data)
       // save the data in database
@@ -136,19 +134,7 @@ const Quiz = () => {
             enteredFullScreen.current = false
          }
       }
-      // router.push(`/result/${quizId.current}`)
    }
-
-   useEffect(() => {
-      fetchQuestions()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [params])
-
-   useEffect(() => {
-      if (!showToast) return
-      const timeoutId = setTimeout(() => setShowToast(null), 3000)
-      return () => clearTimeout(timeoutId)
-   }, [showToast])
 
    const onEnterFullScreen = useCallback(() => {
       if (typeof document !== "undefined") {
@@ -177,6 +163,17 @@ const Quiz = () => {
    }, [])
 
    useEffect(() => {
+      fetchQuestions()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [params])
+
+   useEffect(() => {
+      if (!showToast) return
+      const timeoutId = setTimeout(() => setShowToast(null), 3000)
+      return () => clearTimeout(timeoutId)
+   }, [showToast])
+
+   useEffect(() => {
       if (quizStatus === "started") {
          document.addEventListener("fullscreenchange", onChangeFullScreen)
          document.addEventListener("visibilitychange", onChangeVisibility)
@@ -199,7 +196,6 @@ const Quiz = () => {
             }}
          />
       )
-   // make one component for all of these
    else if (
       (quizStatus === "ended" ||
          quizStatus === "timeup" ||

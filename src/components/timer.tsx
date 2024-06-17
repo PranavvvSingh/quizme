@@ -1,7 +1,7 @@
 "use client"
 
 import { formatTime } from "@/utils/utilities"
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { RxLapTimer as TimerIcon } from "react-icons/rx"
 
 interface TimerProps {
@@ -10,7 +10,7 @@ interface TimerProps {
    onTimeUp: () => void
 }
 const Timer = (props: TimerProps) => {
-   const [time, setTime] = useState(20 * props.numOfQuestions) // 30s for each
+   const [time, setTime] = useState(20 * props.numOfQuestions)
 
    useEffect(() => {
       if (props.stopTimer) return
@@ -33,4 +33,4 @@ const Timer = (props: TimerProps) => {
    )
 }
 
-export default React.memo(Timer)
+export default Timer

@@ -15,12 +15,14 @@ import IncorrectAns from "../../../../../public/incorrect.svg"
 import Image from "next/image"
 import StartQuiz from "@/components/startQuiz"
 import QuizOver from "@/components/quizOver"
+import { decodeParam } from "@/utils/utilities"
 
 const Quiz = () => {
    const params = useParams()
 
-   const topic = useRef(params.topic)
-   const numOfQuestions = useRef(parseInt(params.num[0]))
+   const topic = useRef(decodeParam(params.topic))
+   const numOfQuestions = useRef(parseInt(decodeParam(params.num)))
+
    const supabase = createClient()
    const { data: session } = useSession()
    const quizId = useRef<number>()

@@ -3,8 +3,8 @@ import { redirect } from "next/navigation"
 
 const startQuiz = async (formData: FormData) => {
    "use server"
-   const topic = (formData.get("topic") as string)
-   const numOfQuestions = formData.get("numOfQuestions") as string
+   const topic = encodeURIComponent(formData.get("topic") as string)
+   const numOfQuestions = encodeURIComponent(formData.get("numOfQuestions") as string)
    redirect(`/quiz/${topic}/${numOfQuestions}`)
 }
 

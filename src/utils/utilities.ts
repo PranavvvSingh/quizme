@@ -7,7 +7,7 @@ export function formatTime(seconds: number) {
    const formattedMinutes = String(minutes).padStart(2, "0")
    const formattedSeconds = String(remainingSeconds).padStart(2, "0")
 
-   if(hours>0)  return `${formattedMinutes}:${formattedSeconds}`
+   if (hours > 0) return `${formattedMinutes}:${formattedSeconds}`
 
    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
 }
@@ -25,4 +25,11 @@ export const stringToDateAndTime = (dateString: string) => {
    }${minutes} ${ampm}`
 
    return `${formattedTime}, ${formattedDate}`
+}
+
+export const decodeParam = (param: Array<string> | string) => {
+   if (Array.isArray(param)) {
+      return decodeURIComponent(param[0])
+   }
+   return decodeURIComponent(param)
 }

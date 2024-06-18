@@ -54,9 +54,15 @@ export default async function Home() {
                   <Image alt="Quiz icon" src={HistoryIcon} width={27} />
                   Your past attempts
                </h2>
-               <div className="h-[50vh] overflow-y-auto">
-                  {pastAttempts && <PastAttempts data={pastAttempts} />}
-               </div>
+               {pastAttempts && pastAttempts?.length === 0 ? (
+                  <div className="text-lg h-full flex justify-center items-center">
+                     No history found
+                  </div>
+               ) : (
+                  <div className="h-[50vh] overflow-y-auto">
+                     {pastAttempts && <PastAttempts data={pastAttempts} />}
+                  </div>
+               )}
             </div>
          </div>
       </div>

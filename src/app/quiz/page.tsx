@@ -10,13 +10,13 @@ const startQuiz = async (formData: FormData) => {
 
 const Quiz = () => {
    return (
-      <div className="flex items-center justify-center mx-auto h-full">
+      <div className="flex items-center justify-center mx-auto h-full text-secondary">
          <div className="w-[400px]">
             <form
                action={startQuiz}
-               className="card-body px-7 py-5  border rounded-lg"
+               className="card-body px-7 py-5 border border-accent rounded-lg"
             >
-               <h2 className="card-title mb-4">Begin your quiz now!</h2>
+               <h2 className="card-title mb-4 text-primary">Begin your quiz now!</h2>
                <label className="form-control w-full max-w-xs">
                   <div className="label">
                      <span className="label-text">Mention your topic</span>
@@ -38,7 +38,7 @@ const Quiz = () => {
                   />
                </label>
                <div className="card-actions justify-center">
-                  <button type="submit" className="btn">
+                  <button type="submit" className="btn btn-primary">
                      Start Quiz
                   </button>
                </div>

@@ -34,7 +34,7 @@ const Question = (props: QuestionPropsTypes) => {
                      name="radio-3"
                      checked={selectedOption === index}
                      onClick={() => setSelectedOption(index)}
-                     className="radio h-[20px] w-[20px] mt-[3px]"
+                     className="radio h-[20px] w-[20px] mt-[3px] accent-primary"
                   />
                   <p onClick={() => setSelectedOption(index)}>{option}</p>
                </div>
@@ -43,7 +43,7 @@ const Question = (props: QuestionPropsTypes) => {
 
          <div className="card-actions justify-end mt-3">
             <button
-               className="btn"
+               className="btn btn-outline btn-primary"
                disabled={selectedOption === -1}
                onClick={() => props.saveAnswer(selectedOption)}
             >

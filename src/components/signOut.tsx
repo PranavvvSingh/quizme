@@ -14,12 +14,12 @@ const SignOut = () => {
    else if (pathname.split("/")[1] === "quiz") return null
 
    return (
-      <button
-         className="btn btn-outline px-2 py-1 min-h-[30px] h-[30px]"
+      <div
+         className="text-primary cursor-pointer"
          onClick={() => signOut()}
       >
          Sign Out
-      </button>
+      </div>
    )
 }
 

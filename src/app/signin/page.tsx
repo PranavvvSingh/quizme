@@ -5,7 +5,7 @@ import github from "../../../public/github.svg"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import DashboardIcon from "../../../public/dashboard.svg"
+import { MdOutlineSpaceDashboard as DashboardIcon } from "react-icons/md"
 
 export default function SignIn() {
    const { data: session, status } = useSession()
@@ -26,16 +26,11 @@ export default function SignIn() {
          <div className="h-full w-full flex flex-col gap-8 justify-center items-center pb-10">
             {status === "authenticated" && (
                <>
-                  <h1 className="text-2xl">
+                  <h1 className="text-2xl text-secondary">
                      You are signed in as {session.user?.name}
                   </h1>
-                  <button className="btn">
-                     <Image
-                        src={DashboardIcon}
-                        alt="Score"
-                        height={25}
-                        width={25}
-                     />
+                  <button className="btn btn-outline btn-primary">
+                     <DashboardIcon className="text-primary h-[20px] w-[20px]" />
                      <Link href="/" className="text-lg">
                         Back to Dashboard
                      </Link>
@@ -50,9 +45,11 @@ export default function SignIn() {
             )}
             {status === "unauthenticated" && (
                <>
-                  <h1 className="text-2xl">Sign in to get started</h1>
+                  <h1 className="text-2xl text-secondary">
+                     Sign in to get started
+                  </h1>
                   <button
-                     className="btn text-lg"
+                     className="btn btn-primary btn-outline text-lg"
                      onClick={() => signIn("github")}
                   >
                      Sign in with Github

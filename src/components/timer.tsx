@@ -27,7 +27,7 @@ const Timer = (props: TimerProps) => {
 
    return (
       <span className="absolute top-5 flex items-center gap-1 text-xl">
-         <TimerIcon className="text-2xl" />
+         <TimerIcon className="text-2xl text-secondary" />
          {formatTime(time)}
       </span>
    )

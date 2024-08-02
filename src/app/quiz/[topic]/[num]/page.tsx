@@ -164,6 +164,11 @@ const Quiz = () => {
       }
    }, [])
 
+   const onLosingFocus = useCallback(() => {
+      setQuizStatus("terminate")
+      submitQuiz()
+   }, [])
+
    useEffect(() => {
       fetchQuestions()
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -179,11 +184,13 @@ const Quiz = () => {
       if (quizStatus === "started") {
          document.addEventListener("fullscreenchange", onChangeFullScreen)
          document.addEventListener("visibilitychange", onChangeVisibility)
+         window.addEventListener("blur", onLosingFocus)
       }
 
       return () => {
          document.removeEventListener("fullscreenchange", onChangeFullScreen)
          document.removeEventListener("visibilitychange", onChangeVisibility)
+         window.removeEventListener("blur", onLosingFocus)
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [quizStatus])
@@ -217,7 +224,7 @@ const Quiz = () => {
          <div className="w-[600px]">
             <div className="flex justify-between items-center mb-5">
                <div>
-                  Topic: <button className="btn btn-sm">{topic.current}</button>
+                  Topic: <button className="btn btn-sm btn-primary text-secondary">{topic.current}</button>
                </div>
                <div className="stats shadow ">
                   <div className="stat bg-green-500/[0.9] font-bold text-white px-4 py-[5px] flex items-center">

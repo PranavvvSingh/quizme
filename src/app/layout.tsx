@@ -14,7 +14,7 @@ export default function RootLayout({
    children: React.ReactNode
 }>) {
    return (
-      <html lang="en" data-theme="light" id="layout">
+      <html lang="en" data-theme="dark" id="layout">
          <SessionWrapper>
             <body className="flex flex-col h-screen">
                <Navbar />

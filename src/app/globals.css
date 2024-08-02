@@ -15,3 +15,11 @@
 *::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+:root[data-theme='light'] {
+  --svg-color: black;
+}
+ 
+:root[data-theme='dark'] {
+  --svg-color: white;
+}

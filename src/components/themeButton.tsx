@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 
 const ThemeButton = () => {
-   const [theme, setTheme] = useState("light")
+   const [theme, setTheme] = useState("dark")
    const onHandleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.checked) setTheme("dark")
       else setTheme("light")
@@ -15,7 +15,7 @@ const ThemeButton = () => {
    }, [theme])
 
    useEffect(() => {
-      if (localStorage) setTheme(localStorage.getItem("theme") ?? "light")
+      if (localStorage) setTheme(localStorage.getItem("theme") ?? "dark")
    }, [])
 
    return (
@@ -26,7 +26,7 @@ const ThemeButton = () => {
             height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="black"
+            stroke="var(--svg-color)"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -37,8 +37,8 @@ const ThemeButton = () => {
          <input
             type="checkbox"
             onChange={onHandleChange}
-            // value="synthwave"
-            className="toggle theme-controller"
+            defaultChecked
+            className="toggle theme-controller text-primary border-primary"
          />
          <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +46,7 @@ const ThemeButton = () => {
             height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="black"
+            stroke="var(--svg-color)"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"

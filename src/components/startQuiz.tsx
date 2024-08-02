@@ -15,7 +15,7 @@ const StartQuiz = (props: StartQuizProps) => {
                <li>Navigating between questions is not allowed.</li>
             </ul>
             <button
-               className="btn text-lg"
+               className="btn text-lg btn-primary"
                onClick={props.onStartQuiz}
             >
                Start Quiz
